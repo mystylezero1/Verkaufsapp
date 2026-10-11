@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resell-Assistant Pro v8.0</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans">
+    <nav class="bg-blue-600 text-white p-4 shadow-md flex justify-between items-center">
+        <h1 class="text-2xl font-bold"><i class="fas fa-tags mr-2"></i>Resell-Assistant Pro</h1>
+        <button id="btn-settings" class="bg-blue-700 hover:bg-blue-800 px-4 py-2 rounded-lg transition"><i class="fas fa-cog mr-2"></i>API-Keys</button>
+    </nav>
+
+    <main class="container mx-auto p-4 lg:p-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
+        
+        <!-- Linke Spalte: Upload & Basis-Daten -->
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+            <h2 class="text-xl font-semibold mb-4 border-b pb-2">1. Produktdaten & KI</h2>
+            
+            <div class="mb-4">
+                <label class="block text-sm font-medium mb-1">KI-Provider wählen</label>
+                <select id="ai-provider" class="w-full p-2 border rounded-lg bg-gray-50">
+                    <option value="gemini-2.0-flash">Google Gemini 2.0 Flash</option>
+                    <option value="gpt-4o">OpenAI GPT-4o</option>
+                    <option value="claude-3.5-sonnet">Claude 3.5 Sonnet</option>
+                </select>
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-sm font-medium mb-1">Fotos hochladen (Collage wird generiert)</label>
+                <div class="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer hover:bg-gray-50 transition">
+                    <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
+                    <p class="text-gray-500">Klicken oder Bilder hierher ziehen</p>
+                    <input type="file" id="image-upload" multiple class="hidden" accept="image/*">
+                </div>
+                <div id="image-preview" class="flex gap-2 mt-2 overflow-x-auto"></div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <div>
+                    <label class="block text-sm font-medium mb-1">Zustand</label>
+                    <select id="condition" class="w-full p-2 border rounded-lg bg-gray-50">
+                        <option value="neu">Neu / OVP</option>
+                        <option value="gebraucht">Gebraucht</option>
+                        <option value="unbekannt">Unbekannt / Defekt?</option>
+                    </select>
+                </div>
+                <div class="flex items-end">
+                    <label class="flex items-center space-x-2 p-2 w-full border rounded-lg bg-gray-50 cursor-pointer hover:bg-gray-100 transition">
+                        <input type="checkbox" id="has-receipt" class="w-5 h-5 text-blue-600 rounded">
+                        <span class="text-sm font-medium">Kassenbeleg (Garantie)</span>
+                    </label>
+                </div>
+            </div>
+
+            <button id="btn-analyze" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg shadow-md transition flex justify-center items-center">
+                <i class="fas fa-magic mr-2"></i> Anzeige mit KI generieren
+            </button>
+        </div>
+
+        <!-- Rechte Spalte: Ergebnisse & Versand -->
+        <div class="space-y-6">
+            
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                <h2 class="text-xl font-semibold mb-4 border-b pb-2 flex justify-between">
+                    2. Versand & Logistik 
+                    <span class="text-sm font-normal text-gray-500 bg-gray-100 px-2 py-1 rounded">Tarife 2025</span>
+                </h2>
+                
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Anbieter</label>
+                        <select id="shipping-provider" class="w-full p-2 border rounded-lg bg-gray-50">
+                            <option value="dhl">DHL</option>
+                            <option value="hermes">Hermes</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Gewicht (<span id="weight-display">2</span> kg)</label>
+                        <input type="range" id="weight-slider" min="0.1" max="31.5" step="0.1" value="2" class="w-full mt-2">
+                    </div>
+                </div>
+                
+                <div class="bg-blue-50 text-blue-800 p-3 rounded-lg text-sm flex justify-between items-center">
+                    <span id="shipping-result">Voraussichtliches Paket: <strong>DHL Paket 2kg</strong></span>
+                    <span id="shipping-price" class="font-bold text-lg">6,19 €</span>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 relative">
+                <div id="loading-overlay" class="absolute inset-0 bg-white/90 hidden flex-col justify-center items-center rounded-xl z-10">
+                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-2"></div>
+                    <p class="text-sm text-gray-600 font-medium" id="loading-text">KI analysiert Bilder...</p>
+                </div>
+
+                <h2 class="text-xl font-semibold mb-4 border-b pb-2">3. Fertige Anzeige</h2>
+                
+                <div class="mb-3">
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide">Titel</label>
+                    <input type="text" id="out-title" class="w-full p-2 border rounded-lg font-medium text-lg" readonly placeholder="Wird generiert...">
+                </div>
+                
+                <div class="mb-3">
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide">Preis (€)</label>
+                    <input type="text" id="out-price" class="w-1/3 p-2 border rounded-lg font-bold text-green-600 text-lg" readonly placeholder="---">
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide">Beschreibung</label>
+                    <textarea id="out-desc" rows="8" class="w-full p-2 border rounded-lg text-sm" readonly placeholder="Wird generiert..."></textarea>
+                </div>
+
+                <div class="flex gap-2">
+                    <button class="flex-1 bg-gray-800 hover:bg-gray-900 text-white py-2 rounded-lg transition"><i class="far fa-copy mr-2"></i>Text kopieren</button>
+                    <button class="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg transition"><i class="fas fa-file-export mr-2"></i>Export & Speichern</button>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script src="app.js"></script>
+</body>
+</html>

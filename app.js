@@ -141,17 +141,79 @@ Du MUSST exakt in folgendem JSON-Format antworten. Kein Markdown außerhalb des 
     }
 }
 
-// Basis-Event-Listener für UI
+// Hauptlogik, wenn die Seite geladen ist
 document.addEventListener('DOMContentLoaded', () => {
     const aiManager = new AIManager();
     
-    // UI Elemente
+    // --- UI Elemente Versand ---
     const weightSlider = document.getElementById('weight-slider');
     const weightDisplay = document.getElementById('weight-display');
     
-    // Gewicht-Slider Update
+    // --- UI Elemente Modal ---
+    const settingsModal = document.getElementById('settings-modal');
+    const btnSettings = document.getElementById('btn-settings'); 
+    const btnCloseModal = document.getElementById('btn-close-modal');
+    const btnSaveKeys = document.getElementById('btn-save-keys');
+    const successMsg = document.getElementById('save-success-msg');
+
+    const inputOpenAI = document.getElementById('key-openai');
+    const inputAnthropic = document.getElementById('key-anthropic');
+    const inputGemini = document.getElementById('key-gemini');
+
+    // ==========================================
+    // 1. Modal & LocalStorage Logik
+    // ==========================================
+    
+    // Modal öffnen & Keys laden
+    btnSettings.addEventListener('click', () => {
+        inputOpenAI.value = localStorage.getItem('openai_key') || '';
+        inputAnthropic.value = localStorage.getItem('anthropic_key') || '';
+        inputGemini.value = localStorage.getItem('gemini_key') || '';
+        
+        settingsModal.classList.remove('hidden');
+        successMsg.classList.add('hidden'); 
+    });
+
+    // Modal schließen Funktion
+    const closeModal = () => {
+        settingsModal.classList.add('hidden');
+    };
+
+    btnCloseModal.addEventListener('click', closeModal);
+
+    // Klick auf Hintergrund schließt das Modal
+    settingsModal.addEventListener('click', (e) => {
+        if (e.target === settingsModal) {
+            closeModal();
+        }
+    });
+
+    // Keys im LocalStorage speichern
+    btnSaveKeys.addEventListener('click', () => {
+        const openaiKey = inputOpenAI.value.trim();
+        const anthropicKey = inputAnthropic.value.trim();
+        const geminiKey = inputGemini.value.trim();
+
+        localStorage.setItem('openai_key', openaiKey);
+        localStorage.setItem('anthropic_key', anthropicKey);
+        localStorage.setItem('gemini_key', geminiKey);
+
+        // AIManager direkt updaten
+        aiManager.keys.openai = openaiKey;
+        aiManager.keys.anthropic = anthropicKey;
+        aiManager.keys.gemini = geminiKey;
+
+        successMsg.classList.remove('hidden');
+        setTimeout(() => {
+            closeModal();
+        }, 1500);
+    });
+
+    // ==========================================
+    // 2. Versand-Slider Logik (Basis)
+    // ==========================================
     weightSlider.addEventListener('input', (e) => {
         weightDisplay.textContent = e.target.value;
-        // Hier käme die Logik zur Aktualisierung der echten Versandkosten hin
+        // Zukünftig: Hier wird calculateShipping() aufgerufen
     });
 });

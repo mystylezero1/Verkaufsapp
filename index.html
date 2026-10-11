@@ -15,8 +15,10 @@
 
     <main class="container mx-auto p-4 lg:p-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
         
-        <!-- Linke Spalte: Upload & Basis-Daten -->
-        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+        <!-- ========================================== -->
+        <!-- LINKE SPALTE: Upload & Basis-Daten -->
+        <!-- ========================================== -->
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col h-full">
             <h2 class="text-xl font-semibold mb-4 border-b pb-2">1. Produktdaten & KI</h2>
             
             <div class="mb-4">
@@ -30,14 +32,12 @@
 
             <div class="mb-4">
                 <label class="block text-sm font-medium mb-1">Fotos hochladen (Collage wird generiert)</label>
-                <!-- Der Klickbereich für den Upload -->
                 <div id="upload-zone" class="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer hover:bg-gray-50 transition">
                     <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
                     <p class="text-gray-500">Klicken oder Bilder hierher ziehen</p>
                     <input type="file" id="image-upload" multiple class="hidden" accept="image/*">
                 </div>
-                <!-- Container für die kleinen Vorschaubilder -->
-                <div id="image-preview" class="flex gap-2 mt-2 overflow-x-auto"></div>
+                <div id="image-preview" class="flex gap-2 mt-2 overflow-x-auto min-h-[6rem]"></div>
             </div>
 
             <div class="grid grid-cols-2 gap-4 mb-6">
@@ -48,3 +48,37 @@
                         <option value="gebraucht">Gebraucht</option>
                         <option value="unbekannt">Unbekannt / Defekt?</option>
                     </select>
+                </div>
+                <div class="flex items-end">
+                    <label class="flex items-center space-x-2 p-2 w-full border rounded-lg bg-gray-50 cursor-pointer hover:bg-gray-100 transition h-[42px]">
+                        <input type="checkbox" id="has-receipt" class="w-5 h-5 text-blue-600 rounded">
+                        <span class="text-sm font-medium">Kassenbeleg (Garantie)</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Spacer, drückt den Button nach unten, falls der Platz da ist -->
+            <div class="flex-grow"></div>
+
+            <button id="btn-analyze" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg shadow-md transition flex justify-center items-center mt-4">
+                <i class="fas fa-magic mr-2"></i> Anzeige mit KI generieren
+            </button>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- RECHTE SPALTE: Ergebnisse & Versand -->
+        <!-- ========================================== -->
+        <div class="space-y-6 flex flex-col h-full">
+            
+            <!-- VERSAND -->
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                <h2 class="text-xl font-semibold mb-4 border-b pb-2 flex justify-between items-center">
+                    2. Versand & Logistik 
+                    <span class="text-xs font-bold text-gray-500 bg-gray-100 px-2 py-1 rounded uppercase">Tarife 2025</span>
+                </h2>
+                
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Anbieter</label>
+                        <select id="shipping-provider" class="w-full p-2 border rounded-lg bg-gray-50">
+                            <option value="dhl">DHL

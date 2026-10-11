@@ -88,22 +88,4 @@ Du MUSST exakt in folgendem JSON-Format antworten. Kein Markdown außerhalb des 
         const data = await this.fetchWithRetry("https://api.openai.com/v1/chat/completions", {
             method: "POST",
             headers: { "Content-Type": "application/json", "Authorization": `Bearer ${this.keys.openai}` },
-            body: JSON.stringify(payload)
-        });
-        return JSON.parse(data.choices[0].message.content);
-    }
-
-    async callAnthropic(base64Image, systemPrompt) {
-        if (!this.keys.anthropic) throw new Error("Anthropic API Key fehlt.");
-        const payload = {
-            model: "claude-3-5-sonnet-20241022",
-            max_tokens: 1024,
-            system: systemPrompt,
-            messages: [
-                { role: "user", content: [
-                    { type: "image", source: { type: "base64", media_type: "image/jpeg", data: base64Image } },
-                    { type: "text", text: "Bitte generiere die Kleinanzeige als reines JSON." }
-                ]}
-            ]
-        };
-        const data = await this.fetchWithRetry("
+            body: JSON.stringify(payload
